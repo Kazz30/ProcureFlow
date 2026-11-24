@@ -11,7 +11,9 @@ const MENU = [
   { to: '/supplier-issues', label: 'Supplier Issues' },
   { to: '/suppliers', label: 'Suppliers' },
   { to: '/supplier-products', label: 'Supplier Products' },
+  { heading: 'Settings', roles: [ROLES.ADMIN] },
   { to: '/users', label: 'Users', roles: [ROLES.ADMIN] },
+  { to: '/integrations', label: 'Integrations', roles: [ROLES.ADMIN] },
 ];
 
 export default function Layout() {
@@ -26,11 +28,15 @@ export default function Layout() {
           <small>Supplier &amp; Procurement</small>
         </div>
         <nav>
-          {menu.map((item) => (
-            <NavLink key={item.to} to={item.to}>
-              {item.label}
-            </NavLink>
-          ))}
+          {menu.map((item) =>
+            item.heading ? (
+              <div key={item.heading} className="nav-group">{item.heading}</div>
+            ) : (
+              <NavLink key={item.to} to={item.to}>
+                {item.label}
+              </NavLink>
+            ),
+          )}
         </nav>
         <div className="me">
           <strong>{user.name}</strong>

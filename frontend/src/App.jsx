@@ -10,6 +10,7 @@ import GoodsReceipts from './pages/GoodsReceipts.jsx';
 import SupplierReturns from './pages/SupplierReturns.jsx';
 import SupplierIssues from './pages/SupplierIssues.jsx';
 import Users from './pages/Users.jsx';
+import Integrations from './pages/Integrations.jsx';
 
 /** Para sa mga page na kailangan naka-login. */
 function RequireAuth({ children }) {
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="supplier-returns" element={<SupplierReturns />} />
         <Route path="supplier-issues" element={<SupplierIssues />} />
         <Route path="users" element={<Users />} />
+        <Route path="integrations" element={<Integrations />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

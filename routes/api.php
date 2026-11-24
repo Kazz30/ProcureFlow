@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GoodsReceiptController;
+use App\Http\Controllers\Api\IntegrationAdminController;
 use App\Http\Controllers\Api\SupplierIssueController;
 use App\Http\Controllers\Api\SupplierReturnController;
 use App\Http\Controllers\Api\UserController;
@@ -93,6 +94,12 @@ Route::middleware(['auth:sanctum', 'can.login'])->group(function () {
         Route::get('/users/available-employees', [UserController::class, 'availableEmployees']);
         Route::post('/users', [UserController::class, 'store']);
         Route::put('/users/{user}', [UserController::class, 'update']);
+
+        // A4 – Integrations page (Settings)
+        Route::get('/integrations/health', [IntegrationAdminController::class, 'health']);
+        Route::get('/integrations/outbox', [IntegrationAdminController::class, 'outbox']);
+        Route::post('/integrations/outbox/{outbox}/retry', [IntegrationAdminController::class, 'retry']);
+        Route::get('/integrations/logs', [IntegrationAdminController::class, 'logs']);
     });
 });
 
