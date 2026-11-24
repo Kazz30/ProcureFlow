@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\PurchaseRequestController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\SupplierProductController;
+use App\Http\Controllers\Integration;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -104,6 +105,12 @@ Route::prefix('integration/v1')->group(function () {
     });
 
     Route::middleware('integration.key')->group(function () {
-        // Hakbang 8: /suppliers, /supplier-products, /purchase-requests, /supplier-issues
+        // F6 – para sa INV at CRM
+        Route::get('/suppliers', [Integration\SupplierController::class, 'index']);
+        Route::get('/supplier-products', [Integration\SupplierProductController::class, 'index']);
+        // F4 – galing INV
+        Route::post('/purchase-requests', [Integration\PurchaseRequestController::class, 'store']);
+        // F7 – galing CRM
+        Route::post('/supplier-issues', [Integration\SupplierIssueController::class, 'store']);
     });
 });

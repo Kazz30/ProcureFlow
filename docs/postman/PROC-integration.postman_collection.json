@@ -1,0 +1,116 @@
+{
+  "info": {
+    "name": "PROC – Integration API v1",
+    "description": "Mga integration endpoint ng PROC (Bahagi A5). Itakda ang `base_url` at `api_key` sa Variables ng collection. Huwag i-commit ang tunay na key.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api/integration/v1" },
+    { "key": "api_key", "value": "" }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      { "key": "key", "value": "X-API-KEY", "type": "string" },
+      { "key": "value", "value": "{{api_key}}", "type": "string" },
+      { "key": "in", "value": "header", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "GET /health (walang key)",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": "{{base_url}}/health"
+      }
+    },
+    {
+      "name": "GET /suppliers",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{base_url}}/suppliers?per_page=100",
+          "host": ["{{base_url}}"],
+          "path": ["suppliers"],
+          "query": [
+            { "key": "per_page", "value": "100" },
+            { "key": "updated_since", "value": "2026-11-23T00:00:00+08:00", "disabled": true }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /supplier-products",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{base_url}}/supplier-products?per_page=100",
+          "host": ["{{base_url}}"],
+          "path": ["supplier-products"],
+          "query": [
+            { "key": "per_page", "value": "100" },
+            { "key": "updated_since", "value": "2026-11-23T00:00:00+08:00", "disabled": true }
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /purchase-requests (galing INV) – ulitin para makita ang 200",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{base_url}}/purchase-requests",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"source_system\": \"INV\",\n  \"reference_number\": \"LSA-20261123-0004\",\n  \"branch_code\": \"BR-001\",\n  \"requested_by\": \"EMP-0007\",\n  \"needed_by\": \"2026-11-30\",\n  \"items\": [\n    { \"sku\": \"SKU-0001\", \"quantity\": 50, \"reason\": \"Below reorder level\" }\n  ]\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /purchase-requests – 422 (hindi kilalang SKU)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{base_url}}/purchase-requests",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"source_system\": \"INV\",\n  \"reference_number\": \"LSA-20261123-9999\",\n  \"branch_code\": \"BR-001\",\n  \"requested_by\": null,\n  \"needed_by\": \"2026-11-30\",\n  \"items\": [\n    { \"sku\": \"SKU-9999\", \"quantity\": 50, \"reason\": \"Below reorder level\" }\n  ]\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /supplier-issues (galing CRM) – ulitin para makita ang 200",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{base_url}}/supplier-issues",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"source_system\": \"CRM\",\n  \"reference_number\": \"FB-20261123-0012\",\n  \"sku\": \"SKU-0001\",\n  \"supplier_code\": null,\n  \"issue_type\": \"Defective\",\n  \"description\": \"Broken on opening\",\n  \"quantity_affected\": 1,\n  \"branch_code\": \"BR-001\",\n  \"reported_at\": \"2026-11-23T10:15:00+08:00\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /suppliers – 401 (walang key)",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": "{{base_url}}/suppliers"
+      }
+    }
+  ]
+}
