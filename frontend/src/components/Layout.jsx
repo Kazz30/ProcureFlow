@@ -6,6 +6,7 @@ const MENU = [
   { to: '/suppliers', label: 'Suppliers' },
   { to: '/supplier-products', label: 'Supplier Products' },
   { to: '/purchase-requests', label: 'Purchase Requests' },
+  { to: '/purchase-orders', label: 'Purchase Orders' },
 ];
 
 export default function Layout() {

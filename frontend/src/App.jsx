@@ -5,6 +5,7 @@ import Login from './pages/Login.jsx';
 import Suppliers from './pages/Suppliers.jsx';
 import SupplierProducts from './pages/SupplierProducts.jsx';
 import PurchaseRequests from './pages/PurchaseRequests.jsx';
+import PurchaseOrders from './pages/PurchaseOrders.jsx';
 
 /** Para sa mga page na kailangan naka-login. */
 function RequireAuth({ children }) {
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="suppliers" element={<Suppliers />} />
         <Route path="supplier-products" element={<SupplierProducts />} />
         <Route path="purchase-requests" element={<PurchaseRequests />} />
+        <Route path="purchase-orders" element={<PurchaseOrders />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

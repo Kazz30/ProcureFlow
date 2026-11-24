@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LookupController;
+use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\PurchaseRequestController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\SupplierProductController;
@@ -49,6 +50,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/purchase-requests/{purchaseRequest}/approve', [PurchaseRequestController::class, 'approve']);
         Route::post('/purchase-requests/{purchaseRequest}/reject', [PurchaseRequestController::class, 'reject']);
     });
+
+    // A4 – PR → PO at Purchase Orders
+    Route::get('/purchase-orders', [PurchaseOrderController::class, 'index']);
+    Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show']);
+    Route::middleware('role:'.User::ROLE_ADMIN.','.User::ROLE_PURCHASING)->group(function () {
+        Route::get('/purchase-requests/{purchaseRequest}/po-draft', [PurchaseOrderController::class, 'draftFromRequest']);
+        Route::post('/purchase-requests/{purchaseRequest}/convert', [PurchaseOrderController::class, 'storeFromRequest']);
+        Route::post('/purchase-orders/{purchaseOrder}/send', [PurchaseOrderController::class, 'markSent']);
+    });
+    Route::post('/purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])
+        ->middleware('role:'.User::ROLE_MANAGER);
+    Route::post('/purchase-orders/{purchaseOrder}/cancel', [PurchaseOrderController::class, 'cancel'])
+        ->middleware('role:'.User::ROLE_ADMIN.','.User::ROLE_PURCHASING.','.User::ROLE_MANAGER);
 });
 
 /*

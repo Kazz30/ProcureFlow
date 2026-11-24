@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import api, { errorMessage } from '../api';
 import { ROLES, useAuth } from '../auth.jsx';
+import ConvertToPoModal from '../components/ConvertToPoModal.jsx';
 import Modal from '../components/Modal.jsx';
 import { date, dateTime, statusColor } from '../format';
 
@@ -130,6 +132,7 @@ export default function PurchaseRequests() {
         <PrDetailModal
           pr={viewing}
           isManager={isManager}
+          canConvert={canCreate}
           onClose={() => setViewing(null)}
           onChanged={(updated) => {
             setViewing(updated);
@@ -252,7 +255,9 @@ function CreatePrModal({ products, branches, onClose, onSaved }) {
   );
 }
 
-function PrDetailModal({ pr, isManager, onClose, onChanged }) {
+function PrDetailModal({ pr, isManager, canConvert, onClose, onChanged }) {
+  const navigate = useNavigate();
+  const [converting, setConverting] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [remarks, setRemarks] = useState('');
   const [error, setError] = useState('');
@@ -349,6 +354,30 @@ function PrDetailModal({ pr, isManager, onClose, onChanged }) {
             </div>
           )}
         </div>
+      )}
+
+      {canConvert && pr.status === 'Approved' && (
+        <div className="decision form-actions">
+          <button className="primary" onClick={() => setConverting(true)}>Gumawa ng PO</button>
+        </div>
+      )}
+
+      {pr.status === 'Converted' && (
+        <div className="decision form-actions">
+          <button onClick={() => navigate(`/purchase-orders?pr_number=${pr.pr_number}`)}>Tingnan ang mga PO →</button>
+        </div>
+      )}
+
+      {converting && (
+        <ConvertToPoModal
+          pr={pr}
+          onClose={() => setConverting(false)}
+          onDone={(result) => {
+            setConverting(false);
+            window.alert(result.message);
+            navigate(`/purchase-orders?pr_number=${pr.pr_number}`);
+          }}
+        />
       )}
     </Modal>
   );
