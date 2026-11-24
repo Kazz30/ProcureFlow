@@ -15,4 +15,8 @@ Schedule::command('integration:process-outbox')
     ->everyMinute()
     ->withoutOverlapping();
 
-// Yugto 2: integration:sync-masterdata bawat 15 minuto (idadagdag kapag nagawa na ang command).
+// Kunin ang mga kopya (HR: employees/branches/departments, INV: products/warehouses) bawat 15 minuto.
+// Walang ginagawa habang INTEGRATION_ENABLED=false.
+Schedule::command('integration:sync-masterdata')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping();

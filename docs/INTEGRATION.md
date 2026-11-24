@@ -260,6 +260,14 @@ Ipinapadala ito sa pamamagitan ng **outbox**, kaya tuloy pa rin ang trabaho sa P
 
 Gagamit ang PROC ng `updated_since` (ang pinakabagong `source_updated_at` na hawak nito) at babasahin ang lahat ng page.
 
+- Tumatakbo bawat 15 minuto kapag `INTEGRATION_ENABLED=true`. Manual: `php artisan integration:sync-masterdata`
+  (`--only=products` para sa isa lang, `--full` para kunin ulit ang lahat).
+- Inaasahan ng PROC ang B5 na listahan (`data.items` + `data.meta.last_page`) at `updated_at` sa bawat item.
+- Ang `can_login` ay `true` lang kapag `Active` o `On Leave` ang `employment_status`, kahit ano pa ang ipadala.
+- Kapag down ang isang system, tuloy pa rin ang sync ng iba.
+- **Para sa end-to-end test (B10):** pagkatapos idagdag ng INV ang SKU-0050 (hakbang 2), puwedeng patakbuhin agad sa PROC ang
+  `php artisan integration:sync-masterdata --only=products` bago ang hakbang 4, para hindi na maghintay ng 15 minuto.
+
 ---
 
 ## Pag-debug
