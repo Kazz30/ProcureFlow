@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\GoodsReceipt;
 use App\Models\SupplierReturn;
+use App\Services\Integration\Outbox;
 use App\Support\DocumentNumber;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -12,7 +13,8 @@ use Illuminate\Validation\ValidationException;
  * F5 – Supplier return.
  * Kapag galing sa GRN: ang supplier, warehouse at branch ay galing sa GRN/PO,
  * at hindi puwedeng magbalik nang higit sa na-receive (bawas ang naibalik na).
- * (Hakbang 10) ilalagay sa outbox ang SUPPLIER_RETURN_OUT papunta sa INV.
+ * Inilalagay sa outbox ang SUPPLIER_RETURN_OUT papunta sa INV (stock_sync_status = pending).
+ * Kapag 422 ang sagot ng INV (kulang ang stock): failed, at makikita ang error sa detail.
  */
 class CreateSupplierReturn
 {
@@ -56,7 +58,22 @@ class CreateSupplierReturn
                 $return->items()->create(['sku' => $item['sku'], 'quantity' => (int) $item['quantity']]);
             }
 
-            return $return->load('items');
+            // F5: bawas stock sa INV. Nasa outbox muna (parehong transaction).
+            $return->load('items');
+            Outbox::push('INV', 'POST', '/stock-movements', [
+                'movement_type' => 'SUPPLIER_RETURN_OUT',
+                'source_system' => 'PROC',
+                'reference_number' => $return->return_number,
+                'branch_code' => $return->branch_code,
+                'warehouse_code' => $return->warehouse_code,
+                'performed_by' => $return->returned_by,
+                'items' => $return->items->map(fn ($i) => ['sku' => $i->sku, 'quantity' => $i->quantity])->values()->all(),
+                'remarks' => mb_substr("Return to {$return->supplier_code}".($return->reason ? ": {$return->reason}" : ''), 0, 255),
+            ], $return->return_number);
+
+            $return->update(['stock_sync_status' => 'pending']);
+
+            return $return;
         });
     }
 

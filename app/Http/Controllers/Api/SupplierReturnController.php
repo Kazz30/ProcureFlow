@@ -54,19 +54,32 @@ class SupplierReturnController extends Controller
         return response()->json(['data' => $this->detail($return)], 201);
     }
 
-    /** Puwede lang habang hindi pa naipadala sa INV, o kapag failed. */
+    /**
+     * Puwede lang i-cancel kapag HINDI pa naipapadala sa INV:
+     *   - failed (hal. 422 kulang ang stock), o not_sent
+     *   - pending habang INTEGRATION_ENABLED=false (walang nagpapadala)
+     * Binubura ang row sa outbox para walang maipadala o ma-retry.
+     */
     public function cancel(SupplierReturn $supplierReturn)
     {
         $return = DB::transaction(function () use ($supplierReturn) {
             $return = SupplierReturn::lockForUpdate()->findOrFail($supplierReturn->id);
+            $outbox = $return->stockOutbox()->lockForUpdate()->first();
 
-            if ($return->status !== SupplierReturn::PENDING || ! in_array($return->stock_sync_status, ['not_sent', 'failed'], true)) {
+            $notSentYet = in_array($return->stock_sync_status, ['not_sent', 'failed'], true)
+                || ($return->stock_sync_status === 'pending' && ! config('integration.enabled') && $outbox?->status === 'pending');
+
+            if ($return->status !== SupplierReturn::PENDING || ! $notSentYet) {
                 throw ValidationException::withMessages([
-                    'status' => ['Pending na hindi pa naipadala (o failed) lang ang puwedeng i-cancel.'],
+                    'status' => ['Hindi na puwedeng i-cancel: naipadala na, o ipinapadala na sa INV.'],
                 ]);
             }
 
-            $return->update(['status' => SupplierReturn::CANCELLED]);
+            if ($outbox && $outbox->status !== 'sent') {
+                $outbox->delete();
+            }
+
+            $return->update(['status' => SupplierReturn::CANCELLED, 'stock_sync_status' => 'not_sent']);
 
             return $return;
         });
@@ -76,6 +89,10 @@ class SupplierReturnController extends Controller
 
     private function detail(SupplierReturn $return): SupplierReturn
     {
-        return $return->fresh()->load(['items.product:sku,name,unit', 'supplier:supplier_code,name']);
+        return $return->fresh()->load([
+            'items.product:sku,name,unit',
+            'supplier:supplier_code,name',
+            'stockOutbox:id,reference_number,target_system,endpoint,status,attempts,last_error,next_attempt_at,sent_at',
+        ]);
     }
 }

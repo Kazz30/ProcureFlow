@@ -4,7 +4,7 @@ import api, { errorMessage } from '../api';
 import { ROLES, useAuth } from '../auth.jsx';
 import Modal from '../components/Modal.jsx';
 import { dateTime, statusColor } from '../format';
-import { SYNC_LABEL } from './GoodsReceipts.jsx';
+import { SYNC_LABEL, SyncDetail } from './GoodsReceipts.jsx';
 
 const STATUSES = ['Pending', 'Returned', 'Cancelled'];
 
@@ -287,7 +287,8 @@ function CreateReturnModal({ grnNumber, suppliers, onClose, onSaved }) {
 function ReturnDetailModal({ ret, canEdit, onClose, onChanged }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const canCancel = canEdit && ret.status === 'Pending' && ['not_sent', 'failed'].includes(ret.stock_sync_status);
+  // Ang server ang huling magpapasya (hal. hindi puwede kapag ipinapadala na sa INV).
+  const canCancel = canEdit && ret.status === 'Pending' && ret.stock_sync_status !== 'synced';
 
   const cancel = async () => {
     if (!window.confirm(`I-cancel ang ${ret.return_number}?`)) return;
@@ -326,6 +327,7 @@ function ReturnDetailModal({ ret, canEdit, onClose, onChanged }) {
           {ret.movement_number && <> · <span className="code">{ret.movement_number}</span></>}
         </dd>
       </dl>
+      <SyncDetail outbox={ret.stock_outbox} />
       <table className="items">
         <thead><tr><th>SKU</th><th>Produkto</th><th className="num">Qty</th></tr></thead>
         <tbody>

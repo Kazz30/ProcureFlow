@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Goods receipt (GRN-YYYYMMDD-0001): pag-receive ng mga item ng isang PO.
@@ -36,5 +37,13 @@ class GoodsReceipt extends Model
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class, 'po_number', 'po_number');
+    }
+
+    /** Ang PURCHASE_IN sa outbox (para makita ang status at error ng padala sa INV). */
+    public function stockOutbox(): HasOne
+    {
+        return $this->hasOne(IntegrationOutbox::class, 'reference_number', 'grn_number')
+            ->where('target_system', 'INV')
+            ->where('endpoint', '/stock-movements');
     }
 }

@@ -60,7 +60,7 @@ class ReceivingReturnsIssuesTest extends TestCase
 
         $first = $this->receive($po, ['SKU-0001' => 20])->assertCreated();
         $this->assertMatchesRegularExpression('/^GRN-\d{8}-0001$/', $first->json('data.grn_number'));
-        $this->assertSame('not_sent', $first->json('data.stock_sync_status'));
+        $this->assertSame('pending', $first->json('data.stock_sync_status'));   // nasa outbox na
         $this->assertSame('WH-001', $first->json('data.warehouse_code'));
         $this->assertSame('Partially Received', $po->fresh()->status);
         $this->assertSame(20, $po->items()->where('sku', 'SKU-0001')->value('received_quantity'));
@@ -127,15 +127,16 @@ class ReceivingReturnsIssuesTest extends TestCase
         $this->as('EMP-0008')->postJson("/api/supplier-returns/$id/cancel")->assertStatus(422);
     }
 
-    public function test_cannot_cancel_return_that_is_pending_in_outbox(): void
+    public function test_cannot_cancel_return_that_is_pending_while_integration_is_enabled(): void
     {
         $id = $this->as('EMP-0008')->postJson('/api/supplier-returns', [
             'supplier_code' => 'SUP-0003', 'warehouse_code' => 'WH-001', 'reason' => 'x',
             'items' => [['sku' => 'SKU-0007', 'quantity' => 1]],
         ])->json('data.id');
-        SupplierReturn::find($id)->update(['stock_sync_status' => 'pending']);
+        config(['integration.enabled' => true]);   // baka ipinapadala na ng ProcessOutbox
 
         $this->as('EMP-0008')->postJson("/api/supplier-returns/$id/cancel")->assertStatus(422);
+        $this->assertSame('pending', SupplierReturn::find($id)->stock_sync_status);
     }
 
     public function test_supplier_issue_list_and_update(): void

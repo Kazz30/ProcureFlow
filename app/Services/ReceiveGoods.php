@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\GoodsReceipt;
 use App\Models\PurchaseOrder;
+use App\Services\Integration\Outbox;
 use App\Support\DocumentNumber;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -14,7 +15,7 @@ use Illuminate\Validation\ValidationException;
  *   - gagawin ang GRN at mga item
  *   - dadagdagan ang received_quantity ng PO items
  *   - magiging Partially Received o Received ang PO
- *   - (Hakbang 10) ilalagay sa outbox ang PURCHASE_IN papunta sa INV
+ *   - ilalagay sa outbox ang PURCHASE_IN papunta sa INV, at stock_sync_status = pending
  */
 class ReceiveGoods
 {
@@ -69,7 +70,23 @@ class ReceiveGoods
             $allReceived = $po->items->every(fn ($i) => $i->received_quantity >= $i->quantity);
             $po->update(['status' => $allReceived ? PurchaseOrder::RECEIVED : PurchaseOrder::PARTIALLY_RECEIVED]);
 
-            return $grn->load('items');
+            // F5: dagdag stock sa INV. Nasa outbox muna (parehong transaction):
+            // kapag nag-rollback ang GRN, wala ring maipapadala.
+            $grn->load('items');
+            Outbox::push('INV', 'POST', '/stock-movements', [
+                'movement_type' => 'PURCHASE_IN',
+                'source_system' => 'PROC',
+                'reference_number' => $grn->grn_number,
+                'branch_code' => $grn->branch_code,
+                'warehouse_code' => $grn->warehouse_code,
+                'performed_by' => $grn->received_by,
+                'items' => $grn->items->map(fn ($i) => ['sku' => $i->sku, 'quantity' => $i->quantity])->values()->all(),
+                'remarks' => "Receipt for {$po->po_number}",
+            ], $grn->grn_number);
+
+            $grn->update(['stock_sync_status' => 'pending']);
+
+            return $grn;
         });
     }
 }

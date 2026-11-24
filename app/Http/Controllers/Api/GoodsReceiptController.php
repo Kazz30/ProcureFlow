@@ -50,6 +50,7 @@ class GoodsReceiptController extends Controller
     {
         return $grn->fresh()->load([
             'items.product:sku,name,unit',
+            'stockOutbox:id,reference_number,target_system,endpoint,status,attempts,last_error,next_attempt_at,sent_at',
             'purchaseOrder:id,po_number,pr_number,supplier_code,status',
             'purchaseOrder.supplier:supplier_code,name',
         ]);

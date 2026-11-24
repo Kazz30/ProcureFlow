@@ -15,6 +15,28 @@ export const SYNC_LABEL = {
   failed: 'Nag-fail sa INV',
 };
 
+/** Detalye ng padala sa INV: attempts, susunod na subok, at ang error (hal. 422 kulang ang stock). */
+export function SyncDetail({ outbox }) {
+  if (!outbox) return null;
+  return (
+    <>
+      {outbox.status === 'pending' && (
+        <div className="alert info">
+          Nasa outbox (attempt {outbox.attempts}).{' '}
+          {outbox.next_attempt_at ? `Susubok ulit: ${dateTime(outbox.next_attempt_at)}.` : 'Ipapadala sa susunod na takbo ng scheduler.'}
+          {outbox.last_error && <div className="small">Huling error: {outbox.last_error}</div>}
+        </div>
+      )}
+      {outbox.status === 'failed' && (
+        <div className="alert error">
+          <strong>Hindi tinanggap ng INV</strong> (pagkatapos ng {outbox.attempts} attempt):
+          <div className="small">{outbox.last_error}</div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function GoodsReceipts() {
   const [params, setParams] = useSearchParams();
   const [receipts, setReceipts] = useState([]);
@@ -128,6 +150,7 @@ function GrnDetailModal({ grn, onClose }) {
           {grn.movement_number && <> · <span className="code">{grn.movement_number}</span></>}
         </dd>
       </dl>
+      <SyncDetail outbox={grn.stock_outbox} />
 
       <table className="items">
         <thead>
