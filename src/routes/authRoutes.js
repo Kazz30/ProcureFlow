@@ -40,6 +40,9 @@ router.post('/login', (req, res) => {
       message: `Too many failed login attempts. Access temporarily locked. Please try again in ${remainingSecs} seconds.`
     });
   }
+  if (attemptInfo && attemptInfo.lockUntil && now >= attemptInfo.lockUntil) {
+    loginAttempts.delete(clientIp);
+  }
 
   const { username, password } = req.body;
 
