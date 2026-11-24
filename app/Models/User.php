@@ -23,6 +23,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'employee_no',
+        'employment_status',
+        'can_login',
+        'role',
     ];
 
     /**
@@ -45,6 +49,17 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'can_login' => 'boolean',
         ];
+    }
+
+    /** Mga role sa PROC (A1). */
+    public const ROLE_ADMIN = 'Admin';
+    public const ROLE_MANAGER = 'Manager';
+    public const ROLE_PURCHASING = 'Purchasing Officer';
+
+    public function hasRole(string ...$roles): bool
+    {
+        return in_array($this->role, $roles, true);
     }
 }

@@ -1,12 +1,34 @@
-import './App.css';
+import { Navigate, Route, Routes } from 'react-router';
+import { useAuth } from './auth.jsx';
+import Layout from './components/Layout.jsx';
+import Login from './pages/Login.jsx';
+import Suppliers from './pages/Suppliers.jsx';
+import SupplierProducts from './pages/SupplierProducts.jsx';
 
-function App() {
-  return (
-    <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>
-      <h1>PROC – Supplier &amp; Procurement</h1>
-      <p>API: {import.meta.env.VITE_API_URL}</p>
-    </main>
-  );
+/** Para sa mga page na kailangan naka-login. */
+function RequireAuth({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <p className="center muted">Naglo-load...</p>;
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
 }
 
-export default App;
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        element={
+          <RequireAuth>
+            <Layout />
+          </RequireAuth>
+        }
+      >
+        <Route index element={<Navigate to="/suppliers" replace />} />
+        <Route path="suppliers" element={<Suppliers />} />
+        <Route path="supplier-products" element={<SupplierProducts />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\VerifyIntegrationKey;
 use App\Support\IntegrationResponse;
 use Illuminate\Foundation\Application;
@@ -20,9 +21,16 @@ return Application::configure(basePath: dirname(__DIR__))
         // B7: alias ng middleware na sumusuri sa X-API-KEY.
         $middleware->alias([
             'integration.key' => VerifyIntegrationKey::class,
+            'role' => EnsureRole::class,
         ]);
+
+        // Hindi naka-login sa /api/* → 401 JSON (walang redirect; nasa React ang login page).
+        $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : '/');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Lahat ng /api/* ay laging JSON ang error (hindi HTML page o redirect).
+        $exceptions->shouldRenderJsonWhen(fn (Request $request) => $request->is('api/*') || $request->expectsJson());
+
         // B5: lahat ng error sa /api/integration/* ay nasa iisang format:
         // {"success": false, "message": "...", "errors": {...}}
         $exceptions->render(function (Throwable $e, Request $request) {
