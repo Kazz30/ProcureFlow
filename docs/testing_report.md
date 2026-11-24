@@ -33,7 +33,7 @@ The testing program was executed systematically across multiple levels:
 | **TC-DASH-05** | Dashboard Purchase Count vs. MySQL `COUNT(*)` | Exact match (5) | UI/API: 5 == MySQL: 5 | **PASS** |
 | **TC-DASH-06** | Dashboard Sales Count vs. MySQL `COUNT(*)` | Exact match (5) | UI/API: 5 == MySQL: 5 | **PASS** |
 | **TC-DASH-07** | Dashboard Low-Stock Count vs. MySQL `Stock <= Reorder` | Exact match (5) | UI/API: 5 == MySQL: 5 | **PASS** |
-| **TC-DASH-08** | Inventory Valuation vs. MySQL `SUM(Stock * Price)` | Exact match (₹3,85,030.00) | UI/API: ₹3,85,030.00 == MySQL: ₹3,85,030.00 | **PASS** |
+| **TC-DASH-08** | Inventory Valuation vs. MySQL `SUM(Stock * Price)` | Exact match (₱3,85,030.00) | UI/API: ₱3,85,030.00 == MySQL: ₱3,85,030.00 | **PASS** |
 | **TC-PROD-01** | Create Product through API & verify in MySQL | Product record stored in MySQL | Verified in MySQL: ID 15 generated | **PASS** |
 | **TC-PROD-02** | Edit Product details & verify in MySQL | Price: 8995.00, Stock: 20 updated | MySQL values verified | **PASS** |
 | **TC-PROD-03** | Search Product by keyword in catalog | Returns matching records | Found matching product | **PASS** |
@@ -51,13 +51,13 @@ The testing program was executed systematically across multiple levels:
 | **TC-CUST-01** | Create Customer & verify existence in MySQL | Customer created in MySQL | Verified Customer in MySQL | **PASS** |
 | **TC-CUST-02** | FK Protection: Reject deleting Customer 1 with sales| HTTP 400 error; Customer 1 preserved | HTTP 400: sales invoices reference it | **PASS** |
 | **TC-CUST-03** | Delete unreferenced Customer & verify in MySQL | Customer removed from MySQL | Record count in MySQL = 0 | **PASS** |
-| **TC-PUR-01** | Multi-product purchase creates `Purchase` header | Header created with exact calculated total | Total_Amount = ₹21,200.00 in MySQL | **PASS** |
+| **TC-PUR-01** | Multi-product purchase creates `Purchase` header | Header created with exact calculated total | Total_Amount = ₱21,200.00 in MySQL | **PASS** |
 | **TC-PUR-02** | Multi-product purchase creates 3 line items | 3 detail rows created in `Purchase_Details`| Exactly 3 rows created in MySQL | **PASS** |
 | **TC-PUR-03** | Header total matches `SUM(Quantity * Unit_Price)` | Header Total == Detail Rows Sum | Header: 21200.00 == Details: 21200.00 | **PASS** |
 | **TC-PUR-04** | Stock increment verified in MySQL: Product 1 (+5) | Product 1 stock: 28 $\to$ 33 | Product 1 stock in MySQL = 33 | **PASS** |
 | **TC-PUR-05** | Stock increment verified in MySQL: Product 2 (+10)| Product 2 stock: 45 $\to$ 55 | Product 2 stock in MySQL = 55 | **PASS** |
 | **TC-PUR-06** | Stock increment verified in MySQL: Product 6 (+15)| Product 6 stock: 50 $\to$ 65 | Product 6 stock in MySQL = 65 | **PASS** |
-| **TC-SALE-01** | Multi-product sale creates `Sale` header | Header created with exact calculated total | Total_Amount = ₹10,350.00 in MySQL | **PASS** |
+| **TC-SALE-01** | Multi-product sale creates `Sale` header | Header created with exact calculated total | Total_Amount = ₱10,350.00 in MySQL | **PASS** |
 | **TC-SALE-02** | Multi-product sale creates 3 line items | 3 detail rows created in `Sale_Details` | Exactly 3 rows created in MySQL | **PASS** |
 | **TC-SALE-03** | Header total matches `SUM(Quantity * Unit_Price)` | Header Total == Detail Rows Sum | Header: 10350.00 == Details: 10350.00 | **PASS** |
 | **TC-SALE-04** | Stock decrement verified in MySQL: Product 1 (-2) | Product 1 stock: 33 $\to$ 31 | Product 1 stock in MySQL = 31 | **PASS** |

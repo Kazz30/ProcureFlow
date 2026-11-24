@@ -217,6 +217,22 @@ INVENTORYMANAGEMENT/
 
 ## 7. Installation & Setup Instructions
 
+### Run with Docker Desktop
+Docker Compose starts the Node.js application and a MySQL 8.4 database. The database is initialized with the project schema and sample data the first time its volume is created.
+
+1. In `.env`, set non-empty, strong values for `DB_PASSWORD`, `ADMIN_PASSWORD`, and `SESSION_SECRET`. `DB_PASSWORD` will be the MySQL container's root password; Compose overrides `DB_HOST` to connect the app to the container.
+2. From the project root, build and start the services:
+   ```bash
+   docker compose up --build -d
+   ```
+3. Open `http://localhost:3000`. Sign in with `ADMIN_USERNAME` and `ADMIN_PASSWORD` from `.env`.
+4. Check service status and logs with `docker compose ps` and `docker compose logs -f app`.
+5. Stop the services with `docker compose down`. The named MySQL volume keeps database data between starts. To permanently delete the database and its data, use `docker compose down --volumes`; the initialization scripts run again when the volume is recreated.
+
+If port 3000 is already in use, change `PORT` in `.env`; Compose uses it for the host port while the app continues listening on port 3000 inside the container.
+
+> **Warning:** The initial database script drops and recreates `inventory_management`. Compose runs it only when initializing a new, empty MySQL volume. Do not mount an existing database's data directory into this Compose setup.
+
 ### Prerequisites
 - **Operating System**: Windows 10/11
 - **Database**: MySQL Community Server (Version 8.0+ or 26.7)

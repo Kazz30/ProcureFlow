@@ -71,7 +71,7 @@ async function runWorkflowTests() {
     assert(dash.data.data.summary.totalSuppliers === 5, 'Dashboard confirms 5 registered suppliers');
     assert(dash.data.data.summary.totalCustomers === 6, 'Dashboard confirms 6 registered customers');
     assert(dash.data.data.summary.lowStockCount === 5, 'Dashboard accurately identifies 5 low stock products');
-    assert(dash.data.data.summary.totalInventoryValuation > 0, 'Dashboard computes live inventory valuation in ₹');
+    assert(dash.data.data.summary.totalInventoryValuation > 0, 'Dashboard computes live inventory valuation in ₱');
     assert(dash.data.data.recentPurchases.length > 0, 'Dashboard displays recent purchase inflow activities');
     assert(dash.data.data.recentSales.length > 0, 'Dashboard displays recent sales outflow activities');
 
@@ -192,7 +192,7 @@ async function runWorkflowTests() {
     });
 
     assert(newPurchase.status === 201 && newPurchase.data.success, 'Multi-product purchase created successfully (HTTP 201)');
-    assert(newPurchase.data.data.Total_Amount === 10960.00, 'Purchase total equals exactly SUM(Quantity * Unit_Price) = ₹10,960.00');
+    assert(newPurchase.data.data.Total_Amount === 10960.00, 'Purchase total equals exactly SUM(Quantity * Unit_Price) = ₱10,960.00');
 
     const createdPurchaseId = newPurchase.data.data.Purchase_ID;
 
@@ -224,7 +224,7 @@ async function runWorkflowTests() {
     });
 
     assert(newSale.status === 201 && newSale.data.success, 'Multi-product sale invoice completed successfully (HTTP 201)');
-    assert(newSale.data.data.Total_Amount === 7100.00, 'Sale total equals exactly SUM(Quantity * Unit_Price) = ₹7,100.00');
+    assert(newSale.data.data.Total_Amount === 7100.00, 'Sale total equals exactly SUM(Quantity * Unit_Price) = ₱7,100.00');
 
     const createdSaleId = newSale.data.data.Sale_ID;
 

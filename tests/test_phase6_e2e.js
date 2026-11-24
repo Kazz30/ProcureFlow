@@ -161,8 +161,8 @@ async function runEndToEndIntegration() {
     );
 
     recordTest('TC-DASH-08', 'Dashboard Inventory Valuation matches MySQL SUM(Stock * Price)',
-      `dbValuation: ₹${parseFloat(dbValuation).toFixed(2)}`,
-      `API: ₹${parseFloat(s?.totalInventoryValuation).toFixed(2)}`,
+      `dbValuation: ₱${parseFloat(dbValuation).toFixed(2)}`,
+      `API: ₱${parseFloat(s?.totalInventoryValuation).toFixed(2)}`,
       Math.abs(s?.totalInventoryValuation - dbValuation) < 0.01
     );
 

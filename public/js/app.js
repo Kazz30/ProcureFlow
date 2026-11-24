@@ -827,7 +827,7 @@ function addPurchaseLineItem() {
       <input type="number" step="0.01" min="0" value="0.00" class="form-control form-select-sm purchase-price-input" required oninput="calculatePurchaseTotals()">
     </td>
     <td>
-      <span class="fw-bold text-success purchase-line-total">₹0.00</span>
+      <span class="fw-bold text-success purchase-line-total">₱0.00</span>
     </td>
     <td class="text-center">
       <button type="button" class="btn btn-outline-danger btn-sm p-1" onclick="removePurchaseLineItem('${rowId}')">
@@ -1067,7 +1067,7 @@ function addSaleLineItem() {
       <input type="number" step="0.01" min="0" value="0.00" class="form-control form-select-sm sale-price-input" required oninput="calculateSaleTotals()">
     </td>
     <td>
-      <span class="fw-bold text-primary sale-line-total">₹0.00</span>
+      <span class="fw-bold text-primary sale-line-total">₱0.00</span>
     </td>
     <td class="text-center">
       <button type="button" class="btn btn-outline-danger btn-sm p-1" onclick="removeSaleLineItem('${rowId}')">
@@ -1335,7 +1335,7 @@ async function loadReports() {
 // ----------------------------------------------------------------------------
 function formatCurrency(amount) {
   const num = Number(amount) || 0;
-  return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '₱' + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function formatDateTime(dateStr) {

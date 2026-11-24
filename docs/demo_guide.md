@@ -12,7 +12,7 @@
 ### Step 1: Dashboard & Live Aggregate Overview (1 Minute)
 - **What to do**: Open `http://localhost:3000` in Google Chrome. Point to the top KPI cards and recent transactions.
 - **What to say**:
-  > *"Good morning/afternoon, Sir/Madam. This is our relational Inventory Management System. The dashboard calculates every single metric live from MySQL using SQL aggregate functions—nothing is hard-coded. We currently have 14 products across 5 categories, 5 suppliers, 6 customers, and an inventory valuation of ₹3,85,030.00."*
+  > *"Good morning/afternoon, Sir/Madam. This is our relational Inventory Management System. The dashboard calculates every single metric live from MySQL using SQL aggregate functions—nothing is hard-coded. We currently have 14 products across 5 categories, 5 suppliers, 6 customers, and an inventory valuation of ₱3,85,030.00."*
 - **DBMS Concept Proved**: SQL Aggregate Functions (`COUNT`, `SUM`), Multi-table Joins, Live Data Abstraction.
 
 ---
@@ -36,10 +36,10 @@
 ### Step 4: Multi-Product Purchase Transaction (Stock Inflow) (1.5 Minutes)
 - **What to do**: Click **Purchases** in the sidebar. Note the current stock of **Product 1** (Logitech Keyboard: 28 units) and **Product 2** (Dell Mouse: 45 units). Click **"+ New Multi-Product Purchase"**.
   - Select Supplier: *Apex Infotech Solutions*.
-  - Item 1: *Logitech Keyboard* $\to$ Quantity: `5`, Unit Price: `2000.00` (Line Total: ₹10,000.00).
+  - Item 1: *Logitech Keyboard* $\to$ Quantity: `5`, Unit Price: `2000.00` (Line Total: ₱10,000.00).
   - Click **"+ Add Item"**.
-  - Item 2: *Dell Mouse* $\to$ Quantity: `10`, Unit Price: `300.00` (Line Total: ₹3,000.00).
-  - Show the live Grand Total: **₹13,000.00**.
+  - Item 2: *Dell Mouse* $\to$ Quantity: `10`, Unit Price: `300.00` (Line Total: ₱3,000.00).
+  - Show the live Grand Total: **₱13,000.00**.
   - Click **"Commit Purchase Transaction"**.
   - Show success message and navigate to **Products** to show new stocks: Product 1 is now **33**, Product 2 is now **55**.
 - **What to say**:
@@ -51,10 +51,10 @@
 ### Step 5: Multi-Product Sale Transaction (Stock Outflow) (1.5 Minutes)
 - **What to do**: Click **Sales** in the sidebar. Click **"+ New Multi-Product Sale"**.
   - Select Customer: *Rajesh Sharma*.
-  - Item 1: *Logitech Keyboard* (Show the green badge: `Available: 33`) $\to$ Quantity: `3`, Unit Price: `2650.00` (Line Total: ₹7,950.00).
+  - Item 1: *Logitech Keyboard* (Show the green badge: `Available: 33`) $\to$ Quantity: `3`, Unit Price: `2650.00` (Line Total: ₱7,950.00).
   - Click **"+ Add Item"**.
-  - Item 2: *Dell Mouse* (Badge: `Available: 55`) $\to$ Quantity: `5`, Unit Price: `450.00` (Line Total: ₹2,250.00).
-  - Show Grand Total: **₹10,200.00**.
+  - Item 2: *Dell Mouse* (Badge: `Available: 55`) $\to$ Quantity: `5`, Unit Price: `450.00` (Line Total: ₱2,250.00).
+  - Show Grand Total: **₱10,200.00**.
   - Click **"Commit Sale Transaction"**.
   - Show the updated stock in **Products**: Product 1 is now **30**, Product 2 is now **50**.
 - **What to say**:

@@ -43,7 +43,7 @@ ORDER BY Price DESC
 LIMIT 5;
 ```
 - **What it does**: Sorts all catalog products by price in descending order and projects the top 5 most expensive products.
-- **Expected Result**: Lists products starting from Logitech Webcam (₹6,800.00), Kingston SSD (₹5,600.00), etc.
+- **Expected Result**: Lists products starting from Logitech Webcam (₱6,800.00), Kingston SSD (₱5,600.00), etc.
 - **DBMS Concept Demonstrated**: Ordering/Sorting (`ORDER BY DESC`) and query result truncation (`LIMIT`).
 
 ---
@@ -101,7 +101,7 @@ GROUP BY c.Category_ID, c.Category_Name
 ORDER BY Number_Of_Products DESC;
 ```
 - **What it does**: Computes the total number of products, average selling price, and cumulative physical stock count for every product category.
-- **Expected Result**: 5 rows summarizing metrics per category (e.g., Computer Peripherals has 3 products, average price ₹3,300.00, and 87 total units in stock).
+- **Expected Result**: 5 rows summarizing metrics per category (e.g., Computer Peripherals has 3 products, average price ₱3,300.00, and 87 total units in stock).
 - **DBMS Concept Demonstrated**: SQL aggregation (`COUNT`, `AVG`, `SUM`) partitioned by non-aggregated attributes using `GROUP BY`.
 
 ---
@@ -117,8 +117,8 @@ GROUP BY cu.Customer_ID, cu.Customer_Name
 HAVING SUM(sa.Total_Amount) > 5000.00
 ORDER BY Total_Spent DESC;
 ```
-- **What it does**: Filters out low-volume buyers and displays only high-value customers who have spent strictly more than ₹5,000.00 across all invoices.
-- **Expected Result**: Priya Sundaram (₹24,800.00), Rajesh Sharma (₹7,600.00), Amit Patil (₹6,000.00).
+- **What it does**: Filters out low-volume buyers and displays only high-value customers who have spent strictly more than ₱5,000.00 across all invoices.
+- **Expected Result**: Priya Sundaram (₱24,800.00), Rajesh Sharma (₱7,600.00), Amit Patil (₱6,000.00).
 - **DBMS Concept Demonstrated**: Post-aggregation filtering using `HAVING` vs. row-level filtering with `WHERE`.
 
 ---
@@ -135,7 +135,7 @@ WHERE Price > (SELECT AVG(Price) FROM Product)
 ORDER BY Price DESC;
 ```
 - **What it does**: Computes the global average price across all products and selects only those products priced above that global average.
-- **Expected Result**: 5 premium products (Webcam ₹6,800.00, SSD ₹5,600.00, UPS ₹3,600.00, RAM ₹3,400.00, Keyboard ₹2,650.00) against global average ₹2,146.43.
+- **Expected Result**: 5 premium products (Webcam ₱6,800.00, SSD ₱5,600.00, UPS ₱3,600.00, RAM ₱3,400.00, Keyboard ₱2,650.00) against global average ₱2,146.43.
 - **DBMS Concept Demonstrated**: Scalar subquery returning a single atomic value used dynamically inside `SELECT` and `WHERE` clauses.
 
 ---
@@ -199,5 +199,5 @@ GROUP BY c.Category_ID, c.Category_Name;
 SELECT * FROM vw_category_stock_valuation;
 ```
 - **What it does**: Provides a clean virtual table that summarizes inventory capitalization per category without exposing the underlying table calculations.
-- **Expected Result**: 5 rows displaying total valuation in INR for each category (e.g., Computer Peripherals: ₹1,89,650.00).
+- **Expected Result**: 5 rows displaying total valuation in PHP for each category (e.g., Computer Peripherals: ₱1,89,650.00).
 - **DBMS Concept Demonstrated**: Virtual Table / View abstraction, data hiding, and simplified reporting queries.
