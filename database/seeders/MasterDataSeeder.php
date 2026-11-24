@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -50,7 +52,7 @@ class MasterDataSeeder extends Seeder
                 'position' => $r['position'] ?: null,
                 'employment_status' => $r['employment_status'],
                 // B7: true lang kung Active o On Leave.
-                'can_login' => in_array($r['employment_status'], ['Active', 'On Leave'], true),
+                'can_login' => in_array($r['employment_status'], Employee::LOGIN_STATUSES, true),
             ]);
 
             // Mga kopya galing INV
@@ -97,8 +99,9 @@ class MasterDataSeeder extends Seeder
     }
 
     /**
-     * Gumagawa ng user account para sa EMP-0001, EMP-0002 at EMP-0008.
-     * Kapag mayroon na ang user, HINDI binabago ang password niya.
+     * Gumagawa ng user account para sa EMP-0001, EMP-0002 at EMP-0008, kapag WALA pa.
+     * Kapag mayroon na: HINDI binabago ang password at role (baka binago ng Admin);
+     * ang employment_status at can_login lang ang kinokopya mula sa employees (F1).
      */
     private function seedUsers(): void
     {
@@ -107,33 +110,27 @@ class MasterDataSeeder extends Seeder
         $password = env('SEED_DEFAULT_PASSWORD') ?: 'password';
 
         foreach (self::USERS as $employeeNo => $role) {
-            $employee = DB::table('employees')->where('employee_no', $employeeNo)->first();
+            $employee = Employee::where('employee_no', $employeeNo)->first();
             if (! $employee) {
                 throw new RuntimeException("Walang $employeeNo sa employees.csv");
             }
 
-            $values = [
-                'name' => trim("{$employee->first_name} {$employee->last_name}"),
+            $user = User::firstOrCreate(['employee_no' => $employeeNo], [
+                'name' => $employee->full_name,
                 'email' => $employee->email,
+                'password' => Hash::make($password),
+                'role' => $role,
                 'employment_status' => $employee->employment_status,
                 'can_login' => $employee->can_login,
-                'role' => $role,
-                'updated_at' => now(),
-            ];
+            ]);
 
-            $exists = DB::table('users')->where('employee_no', $employeeNo)->exists();
+            $this->command?->info("  user {$employeeNo} ({$user->role}): {$user->email}".($user->wasRecentlyCreated ? ' (bago)' : ''));
+        }
 
-            if ($exists) {
-                DB::table('users')->where('employee_no', $employeeNo)->update($values);
-            } else {
-                DB::table('users')->insert($values + [
-                    'employee_no' => $employeeNo,
-                    'password' => Hash::make($password),
-                    'created_at' => now(),
-                ]);
-            }
-
-            $this->command?->info("  user {$employeeNo} ({$role}): {$employee->email}");
+        // F1: lahat ng user na may employee_no → kopyahin ang status; burahin ang tokens kapag hindi na puwede.
+        $deactivated = User::syncLoginFromEmployees();
+        if ($deactivated > 0) {
+            $this->command?->warn("  $deactivated user ang hindi na makaka-login (binura ang tokens).");
         }
     }
 

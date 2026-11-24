@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureCanLogin;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\VerifyIntegrationKey;
 use App\Support\IntegrationResponse;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'integration.key' => VerifyIntegrationKey::class,
             'role' => EnsureRole::class,
+            'can.login' => EnsureCanLogin::class,
         ]);
 
         // Hindi naka-login sa /api/* → 401 JSON (walang redirect; nasa React ang login page).

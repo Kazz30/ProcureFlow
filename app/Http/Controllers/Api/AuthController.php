@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * Login ng mga user ng PROC gamit ang Sanctum token.
- * (Sa Hakbang 11 idadagdag ang can_login check.)
+ * F1: hindi makaka-login ang user na can_login = false.
  */
 class AuthController extends Controller
 {
@@ -27,6 +27,14 @@ class AuthController extends Controller
             throw ValidationException::withMessages([
                 'email' => ['Mali ang email o password.'],
             ]);
+        }
+
+        // F1: tanggihan kapag hindi na puwedeng mag-login ayon sa HR (hal. Resigned).
+        // (Sinusuri pagkatapos ng password, para hindi malaman ng iba kung sino ang may account.)
+        if (! $user->can_login) {
+            return response()->json([
+                'message' => 'Hindi na aktibo ang account mo'.($user->employment_status ? " ({$user->employment_status})" : '').'. Makipag-ugnayan sa HR.',
+            ], 403);
         }
 
         $token = $user->createToken('proc-web')->plainTextToken;

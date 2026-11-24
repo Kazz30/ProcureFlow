@@ -1,7 +1,8 @@
 import { NavLink, Outlet } from 'react-router';
-import { useAuth } from '../auth.jsx';
+import { ROLES, useAuth } from '../auth.jsx';
 
 // Ang menu, ayon sa daloy: supplier → PR → PO → receive → return; at mga reklamo galing CRM.
+// `roles`: kung sino lang ang makakakita (wala = lahat).
 const MENU = [
   { to: '/purchase-requests', label: 'Purchase Requests' },
   { to: '/purchase-orders', label: 'Purchase Orders' },
@@ -10,10 +11,12 @@ const MENU = [
   { to: '/supplier-issues', label: 'Supplier Issues' },
   { to: '/suppliers', label: 'Suppliers' },
   { to: '/supplier-products', label: 'Supplier Products' },
+  { to: '/users', label: 'Users', roles: [ROLES.ADMIN] },
 ];
 
 export default function Layout() {
-  const { user, logout } = useAuth();
+  const { user, logout, hasRole } = useAuth();
+  const menu = MENU.filter((item) => !item.roles || hasRole(...item.roles));
 
   return (
     <div className="shell">
@@ -23,7 +26,7 @@ export default function Layout() {
           <small>Supplier &amp; Procurement</small>
         </div>
         <nav>
-          {MENU.map((item) => (
+          {menu.map((item) => (
             <NavLink key={item.to} to={item.to}>
               {item.label}
             </NavLink>

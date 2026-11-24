@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GoodsReceiptController;
 use App\Http\Controllers\Api\SupplierIssueController;
 use App\Http\Controllers\Api\SupplierReturnController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\LookupController;
 use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\PurchaseRequestController;
@@ -21,7 +22,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->group(function () {
+// can.login (F1): tinatanggihan ang user na hindi na puwedeng mag-login, kahit may token pa.
+Route::middleware(['auth:sanctum', 'can.login'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -84,6 +86,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/supplier-issues/{supplierIssue}', [SupplierIssueController::class, 'show']);
     Route::put('/supplier-issues/{supplierIssue}', [SupplierIssueController::class, 'update'])
         ->middleware('role:'.User::ROLE_ADMIN.','.User::ROLE_PURCHASING.','.User::ROLE_MANAGER);
+
+    // F1 – Mga user account (Admin lang)
+    Route::middleware('role:'.User::ROLE_ADMIN)->group(function () {
+        Route::get('/users', [UserController::class, 'index']);
+        Route::get('/users/available-employees', [UserController::class, 'availableEmployees']);
+        Route::post('/users', [UserController::class, 'store']);
+        Route::put('/users/{user}', [UserController::class, 'update']);
+    });
 });
 
 /*
