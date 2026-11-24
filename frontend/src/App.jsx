@@ -4,6 +4,7 @@ import Layout from './components/Layout.jsx';
 import Login from './pages/Login.jsx';
 import Suppliers from './pages/Suppliers.jsx';
 import SupplierProducts from './pages/SupplierProducts.jsx';
+import PurchaseRequests from './pages/PurchaseRequests.jsx';
 
 /** Para sa mga page na kailangan naka-login. */
 function RequireAuth({ children }) {
@@ -27,6 +28,7 @@ export default function App() {
         <Route index element={<Navigate to="/suppliers" replace />} />
         <Route path="suppliers" element={<Suppliers />} />
         <Route path="supplier-products" element={<SupplierProducts />} />
+        <Route path="purchase-requests" element={<PurchaseRequests />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LookupController;
+use App\Http\Controllers\Api\PurchaseRequestController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\SupplierProductController;
 use App\Models\User;
@@ -36,6 +37,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/supplier-products', [SupplierProductController::class, 'store']);
         Route::put('/supplier-products/{supplierProduct}', [SupplierProductController::class, 'update']);
         Route::delete('/supplier-products/{supplierProduct}', [SupplierProductController::class, 'destroy']);
+    });
+
+    // A4 – Purchase requests
+    Route::get('/purchase-requests', [PurchaseRequestController::class, 'index']);
+    Route::get('/purchase-requests/{purchaseRequest}', [PurchaseRequestController::class, 'show']);
+    Route::post('/purchase-requests', [PurchaseRequestController::class, 'store'])
+        ->middleware('role:'.User::ROLE_ADMIN.','.User::ROLE_PURCHASING);
+    // Ang Manager ang nag-a-approve o nagre-reject.
+    Route::middleware('role:'.User::ROLE_MANAGER)->group(function () {
+        Route::post('/purchase-requests/{purchaseRequest}/approve', [PurchaseRequestController::class, 'approve']);
+        Route::post('/purchase-requests/{purchaseRequest}/reject', [PurchaseRequestController::class, 'reject']);
     });
 });
 

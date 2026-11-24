@@ -5,6 +5,7 @@ import { useAuth } from '../auth.jsx';
 const MENU = [
   { to: '/suppliers', label: 'Suppliers' },
   { to: '/supplier-products', label: 'Supplier Products' },
+  { to: '/purchase-requests', label: 'Purchase Requests' },
 ];
 
 export default function Layout() {

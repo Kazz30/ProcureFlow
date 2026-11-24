@@ -1,8 +1,8 @@
-/** Simpleng pop-up para sa mga form. */
-export default function Modal({ title, onClose, children }) {
+/** Simpleng pop-up para sa mga form. Ang `wide` ay para sa may table ng items. */
+export default function Modal({ title, onClose, wide = false, children }) {
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
-      <div className="modal card" onMouseDown={(e) => e.stopPropagation()}>
+      <div className={`modal card ${wide ? 'wide' : ''}`} onMouseDown={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <h2>{title}</h2>
           <button className="link" onClick={onClose} aria-label="Isara">
