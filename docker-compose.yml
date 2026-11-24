@@ -7,6 +7,8 @@ x-laravel-env: &laravel-env
   APP_NAME: "${APP_NAME:-My System}"
   APP_ENV: "${APP_ENV:-local}"
   APP_DEBUG: "${APP_DEBUG:-true}"
+  # Iisang APP_KEY para sa api at scheduler. Kapag wala sa .env, hindi magsisimula ang compose.
+  APP_KEY: "${APP_KEY:?Ilagay ang APP_KEY sa .env (gumawa gamit ang: php artisan key:generate --show)}"
   APP_URL: http://${PUBLIC_HOST:-localhost}:8000
   APP_TIMEZONE: Asia/Manila
   DB_CONNECTION: mysql
