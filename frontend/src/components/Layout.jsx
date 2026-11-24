@@ -1,12 +1,15 @@
 import { NavLink, Outlet } from 'react-router';
 import { useAuth } from '../auth.jsx';
 
-// Ang menu. Idadagdag dito ang PR, PO, GRN, returns at issues sa susunod na mga bahagi.
+// Ang menu, ayon sa daloy: supplier → PR → PO → receive → return; at mga reklamo galing CRM.
 const MENU = [
-  { to: '/suppliers', label: 'Suppliers' },
-  { to: '/supplier-products', label: 'Supplier Products' },
   { to: '/purchase-requests', label: 'Purchase Requests' },
   { to: '/purchase-orders', label: 'Purchase Orders' },
+  { to: '/goods-receipts', label: 'Goods Receipts' },
+  { to: '/supplier-returns', label: 'Supplier Returns' },
+  { to: '/supplier-issues', label: 'Supplier Issues' },
+  { to: '/suppliers', label: 'Suppliers' },
+  { to: '/supplier-products', label: 'Supplier Products' },
 ];
 
 export default function Layout() {

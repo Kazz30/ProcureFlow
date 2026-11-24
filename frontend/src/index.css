@@ -144,3 +144,8 @@ table.items th, table.items td { padding: 0.4rem 0.6rem; }
 button.danger-btn { color: var(--danger); border-color: var(--danger); }
 
 .small { font-size: 0.8rem; }
+
+/* Hakbang 7d: tabs sa form */
+.tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid var(--border); }
+.tabs button { border: none; border-bottom: 2px solid transparent; border-radius: 0; background: none; padding: 0.4rem 0.8rem; }
+.tabs button.active { border-bottom-color: var(--primary); color: var(--primary); font-weight: 600; }

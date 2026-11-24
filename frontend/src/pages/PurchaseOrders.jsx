@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import api, { errorMessage } from '../api';
 import { ROLES, useAuth } from '../auth.jsx';
 import Modal from '../components/Modal.jsx';
 import { dateTime, peso, statusColor } from '../format';
 
 const STATUSES = ['Draft', 'Approved', 'Sent', 'Partially Received', 'Received', 'Cancelled'];
+const RECEIVABLE = ['Approved', 'Sent', 'Partially Received'];
 
 export default function PurchaseOrders() {
   const [params, setParams] = useSearchParams();
@@ -136,6 +137,8 @@ export default function PurchaseOrders() {
 
 function PoDetailModal({ po, onClose, onChanged }) {
   const { hasRole } = useAuth();
+  const navigate = useNavigate();
+  const [receiving, setReceiving] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -224,6 +227,93 @@ function PoDetailModal({ po, onClose, onChanged }) {
         {isPurchasing && po.status === 'Approved' && (
           <button className="primary" disabled={busy} onClick={() => act('send')}>Markahang Sent sa supplier</button>
         )}
+        {isPurchasing && RECEIVABLE.includes(po.status) && (
+          <button className="primary" onClick={() => setReceiving(true)}>Receive (dumating na)</button>
+        )}
+        {anyReceived && (
+          <button onClick={() => navigate(`/goods-receipts?po_number=${po.po_number}`)}>Tingnan ang mga GRN →</button>
+        )}
+      </div>
+
+      {receiving && (
+        <ReceiveModal
+          po={po}
+          onClose={() => setReceiving(false)}
+          onDone={async (grn) => {
+            setReceiving(false);
+            window.alert(`Na-save ang ${grn.grn_number}.`);
+            const res = await api.get(`/purchase-orders/${po.id}`);
+            onChanged(res.data.data);
+          }}
+        />
+      )}
+    </Modal>
+  );
+}
+
+/** F5 – Pag-receive: ilagay kung ilan ang dumating sa bawat item. */
+function ReceiveModal({ po, onClose, onDone }) {
+  const [qty, setQty] = useState(() =>
+    Object.fromEntries(po.items.map((i) => [i.id, String(i.quantity - i.received_quantity)])),
+  );
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const save = async () => {
+    setSaving(true);
+    setError('');
+    try {
+      const res = await api.post(`/purchase-orders/${po.id}/receive`, {
+        items: po.items.map((i) => ({ purchase_order_item_id: i.id, quantity: Number(qty[i.id] || 0) })),
+      });
+      onDone(res.data.data);
+    } catch (err) {
+      setError(errorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Modal title={`Receive ${po.po_number} → ${po.warehouse_code}`} onClose={onClose} wide>
+      {error && <div className="alert error">{error}</div>}
+      <table className="items">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Produkto</th>
+            <th className="num">Ordered</th>
+            <th className="num">Na-receive na</th>
+            <th className="num">Dumating ngayon</th>
+          </tr>
+        </thead>
+        <tbody>
+          {po.items.map((item) => {
+            const remaining = item.quantity - item.received_quantity;
+            return (
+              <tr key={item.id}>
+                <td className="code">{item.sku}</td>
+                <td>{item.product?.name}</td>
+                <td className="num">{item.quantity}</td>
+                <td className="num">{item.received_quantity}</td>
+                <td style={{ width: 120 }}>
+                  <input
+                    type="number" min="0" max={remaining} step="1"
+                    value={qty[item.id]} disabled={remaining === 0}
+                    onChange={(e) => setQty({ ...qty, [item.id]: e.target.value })}
+                  />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <p className="muted small">
+        Isang GRN ang mabubuo. Kapag may kulang pa, magiging Partially Received ang PO at puwedeng i-receive ulit mamaya.
+      </p>
+      <div className="form-actions">
+        <button onClick={onClose}>Kanselahin</button>
+        <button className="primary" disabled={saving} onClick={save}>{saving ? 'Sine-save...' : 'I-save ang GRN'}</button>
       </div>
     </Modal>
   );

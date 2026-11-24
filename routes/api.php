@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\GoodsReceiptController;
+use App\Http\Controllers\Api\SupplierIssueController;
+use App\Http\Controllers\Api\SupplierReturnController;
 use App\Http\Controllers\Api\LookupController;
 use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\PurchaseRequestController;
@@ -62,6 +65,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])
         ->middleware('role:'.User::ROLE_MANAGER);
     Route::post('/purchase-orders/{purchaseOrder}/cancel', [PurchaseOrderController::class, 'cancel'])
+        ->middleware('role:'.User::ROLE_ADMIN.','.User::ROLE_PURCHASING.','.User::ROLE_MANAGER);
+
+    // F5 – Goods receipts at supplier returns
+    Route::get('/goods-receipts', [GoodsReceiptController::class, 'index']);
+    Route::get('/goods-receipts/{goodsReceipt}', [GoodsReceiptController::class, 'show']);
+    Route::get('/supplier-returns', [SupplierReturnController::class, 'index']);
+    Route::get('/supplier-returns/{supplierReturn}', [SupplierReturnController::class, 'show']);
+    Route::middleware('role:'.User::ROLE_ADMIN.','.User::ROLE_PURCHASING)->group(function () {
+        Route::post('/purchase-orders/{purchaseOrder}/receive', [GoodsReceiptController::class, 'store']);
+        Route::post('/supplier-returns', [SupplierReturnController::class, 'store']);
+        Route::post('/supplier-returns/{supplierReturn}/cancel', [SupplierReturnController::class, 'cancel']);
+    });
+
+    // F7 – Supplier issues (galing CRM)
+    Route::get('/supplier-issues', [SupplierIssueController::class, 'index']);
+    Route::get('/supplier-issues/{supplierIssue}', [SupplierIssueController::class, 'show']);
+    Route::put('/supplier-issues/{supplierIssue}', [SupplierIssueController::class, 'update'])
         ->middleware('role:'.User::ROLE_ADMIN.','.User::ROLE_PURCHASING.','.User::ROLE_MANAGER);
 });
 
